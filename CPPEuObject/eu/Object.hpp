@@ -35,15 +35,28 @@ namespace eu
 #endif
         Object() { obj = NOVALUE; SET_DEBUG } // default constructor
         ~Object() { SET_DEBUG DeRef(obj) obj = NOVALUE; } // default destructor
-        Object(const Object& x) { obj = x.obj; Ref(obj) SET_DEBUG } // copy constructor
-        Object& operator= (const Object& x) { DeRef(obj) obj = x.obj; Ref(obj) SET_DEBUG return *this; } // copy assignment
-    // On newer compilers:
-        Object(Object&& x) { obj = x.obj; x.obj = NOVALUE; SET_DEBUG } // move constructor
-        Object& operator= (Object&& x) { DeRef(obj) obj = x.obj; x.obj = NOVALUE; SET_DEBUG return *this; } // move assignment
-    // End On newer compilers.
+        Object(const Object& x) { obj = x.obj; SET_DEBUG Ref(obj) } // copy constructor
+        Object& operator= (const Object& x) { SET_DEBUG DeRef(obj) obj = x.obj; SET_DEBUG Ref(obj) return *this; } // copy assignment
+#ifndef __WATCOMC__
+        Object(Object&& x) { SET_DEBUG obj = x.obj; SET_DEBUG x.obj = NOVALUE; } // move constructor
+        Object& operator= (Object&& x) { SET_DEBUG DeRef(obj) obj = x.obj; SET_DEBUG x.obj = NOVALUE; return *this; } // move assignment
+#endif
+        //Object(const object& x) { obj = x; RefObj(); }
+        //Object(object& x) { obj = x; RefObj(); }
+        //Object(const object x) { obj = x; RefObj(); }
+        Object(object x) { SET_DEBUG obj = x; SET_DEBUG } // Increase the reference count before calling this function.
+        Object& operator= (const object& x)
+        {
+            SET_DEBUG
+                DeRef(obj)
+                obj = x;
+            SET_DEBUG
+                Ref(obj) // Possibly not a memory leak.
+                return *this;
+        }
+
         Object(d_ptr a) { obj = MAKE_DBL(a); SET_DEBUG }
         Object(s1_ptr a) { obj = MAKE_SEQ(a); SET_DEBUG }
-        Object(object a) { obj = a; Ref(obj) SET_DEBUG }
 
         bool is_initialized() { SET_DEBUG return obj != NOVALUE; }
         object swap(object x) { object ret = obj; obj = x; SET_DEBUG return ret; }
@@ -76,7 +89,7 @@ namespace eu
             }
             else
             {
-                RTFatal("Expected an object in Object::print().");
+                RTFatal("Expected an initialized object in Object::print().");
             }
         }
 

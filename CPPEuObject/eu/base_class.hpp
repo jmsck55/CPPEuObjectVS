@@ -25,21 +25,37 @@ namespace eu
         inline static d_ptr lookatd;
         inline static s1_ptr lookats;
 #endif
-        base_class() { obj = NOVALUE; SET_DEBUG }
-        base_class(object ob) { obj = ob; Ref(obj) SET_DEBUG }
-        ~base_class() { SET_DEBUG DeRef(obj) obj = NOVALUE; }
-        bool is_initialized() { SET_DEBUG return obj != NOVALUE; }
-        object swap(object x) { object ret = obj; obj = x; SET_DEBUG return ret; }
-
-        elong get_etype() { if (obj == NOVALUE) return 0; if (IS_ATOM_INT(obj)) return E_INTEGER; if (IS_ATOM_DBL(obj)) return E_ATOM; if (IS_SEQUENCE(obj)) return E_SEQUENCE; return E_OBJECT; }
-        object GetValue() { Ref(obj) return obj; } // Get a copy of the value.
+        base_class() { obj = NOVALUE; SET_DEBUG } // default constructor
+        ~base_class() { SET_DEBUG DeRef(obj) obj = NOVALUE; } // default destructor
+        base_class(const base_class& x) { obj = x.obj; SET_DEBUG Ref(obj) } // copy constructor
+        base_class& operator= (const base_class& x) { SET_DEBUG DeRef(obj) obj = x.obj; SET_DEBUG Ref(obj) return *this; } // copy assignment
+#ifndef __WATCOMC__
+        base_class(base_class&& x) { SET_DEBUG obj = x.obj; SET_DEBUG x.obj = NOVALUE; } // move constructor
+        base_class& operator= (base_class&& x) { SET_DEBUG DeRef(obj) obj = x.obj; SET_DEBUG x.obj = NOVALUE; return *this; } // move assignment
+#endif
+        //base_class(const object& x) { obj = x; RefObj(); }
+        //base_class(object& x) { obj = x; RefObj(); }
+        //base_class(const object x) { obj = x; RefObj(); }
+        base_class(object x) { SET_DEBUG obj = x; SET_DEBUG } // Increase the reference count before calling this function.
         base_class& operator= (const object& x)
         {
+            SET_DEBUG
             DeRef(obj)
             obj = x;
+            SET_DEBUG
             Ref(obj) // Possibly not a memory leak.
             return *this;
         }
+
+        //object Copy() { SET_DEBUG Ref(obj) return obj; }
+        //void Delete() { SET_DEBUG DeRef(obj) }
+        elong get_etype() { SET_DEBUG if (obj == NOVALUE) return 0; if (IS_ATOM_INT(obj)) return E_INTEGER; if (IS_ATOM_DBL(obj)) return E_ATOM; if (IS_SEQUENCE(obj)) return E_SEQUENCE; return E_OBJECT; }
+        bool is_initialized() { SET_DEBUG return obj != NOVALUE; }
+        object GetValue() { SET_DEBUG Ref(obj) return obj; } // Get a copy of the value.
+        object swap(object x) { object ret = obj; obj = x; SET_DEBUG return ret; }
+
+        // For Debugging:
+        elong ViewCount() { if (IS_DBL_OR_SEQUENCE(obj)) return DBL_PTR(obj)->ref; return -1; }
 
         // Math operators:
         base_class operator- () { base_class temp(Juminus(obj)); return temp; }

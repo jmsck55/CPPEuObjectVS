@@ -19,8 +19,12 @@ struct __complex128 {
 #endif
 #endif
 
+#define VIEW_COUNT(name, count) printf("%s -> count == %d\n", name, (int)count)
+
 int main()
 {
+    cout << "INTPTR_MAX==" << INTPTR_MAX << endl;
+    cout << "INT64_MAX==" << INT64_MAX << endl;
 #ifdef USE_QUADMATH_H
     cout << "Sizeof(__complex128) is " << sizeof(__complex128) << endl;
     cout << "Sizeof(equadmath) is " << sizeof(equadmath) << endl;
@@ -40,11 +44,49 @@ int main()
     cout << "DBL_DIG is " << DBL_DIG << endl;
     cout << "LDBL_DIG is " << LDBL_DIG << endl;
 
-    Object num(33);
 
-    num.print();
-    printf("\n");
+    if (true) {
+        Object<>* ap;
+        Object<>* bp;
+        Object<>* cp;
+
+        if (true) {
+            Object st(NewString("abc"));
+            Object sum((elong)'a' - (elong)'A');
+            Object result;
+
+            VIEW_COUNT("st", st.eobject()->ViewCount());
+            VIEW_COUNT("sum", sum.eobject()->ViewCount());
+            VIEW_COUNT("result", result.eobject()->ViewCount());
+
+            *result.eobject() = *st.eobject() - *sum.eobject();
+
+            VIEW_COUNT("st", st.eobject()->ViewCount());
+            VIEW_COUNT("sum", sum.eobject()->ViewCount());
+            VIEW_COUNT("result", result.eobject()->ViewCount());
+
+            //here
+
+            st.print(2);
+            printf("\n");
+            printf("Results should be in uppercase:\n");
+            result.print(2);
+            printf("\n");
+
+            ap = &st;
+            bp = &sum;
+            cp = &result;
+
+            //st.~Object();
+            //sum.~Object();
+            //result.~Object();
+        }
+        VIEW_COUNT("st", ap->eobject()->ViewCount());
+        VIEW_COUNT("sum", bp->eobject()->ViewCount());
+        VIEW_COUNT("result", cp->eobject()->ViewCount());
+    }
     //here
+
 
 #ifdef USE_QUADMATH_H
     equadmath a;

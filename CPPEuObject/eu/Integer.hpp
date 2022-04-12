@@ -20,21 +20,37 @@ namespace eu
     protected:
         //object obj;
     public:
-// #ifndef DONE_DEBUGGING
-//         inline static d_ptr lookatd;
-//         inline static s1_ptr lookats;
-// #endif
+#ifndef DONE_DEBUGGING
+        inline static d_ptr lookatd;
+        inline static s1_ptr lookats;
+#endif
         Integer() { obj = NOVALUE; SET_DEBUG } // default constructor
         ~Integer() { SET_DEBUG DeRef(obj) obj = NOVALUE; } // default destructor
-        Integer(const Integer& x) { obj = x.obj; Ref(obj) SET_DEBUG } // copy constructor
-        Integer& operator= (const Integer& x) { DeRef(obj) obj = x.obj; Ref(obj) SET_DEBUG return *this; } // copy assignment
-    // On newer compilers:
-        Integer(Integer&& x) noexcept { obj = x.obj; x.obj = NOVALUE; SET_DEBUG } // move constructor
-        Integer& operator= (Integer&& x) noexcept { DeRef(obj) obj = x.obj; x.obj = NOVALUE; SET_DEBUG return *this; } // move assignment
-    // End On newer compilers.
+        Integer(const Integer& x) { obj = x.obj; SET_DEBUG Ref(obj) } // copy constructor
+        Integer& operator= (const Integer& x) { SET_DEBUG DeRef(obj) obj = x.obj; SET_DEBUG Ref(obj) return *this; } // copy assignment
+#ifndef __WATCOMC__
+        Integer(Integer&& x) { SET_DEBUG obj = x.obj; SET_DEBUG x.obj = NOVALUE; } // move constructor
+        Integer& operator= (Integer&& x) { SET_DEBUG DeRef(obj) obj = x.obj; SET_DEBUG x.obj = NOVALUE; return *this; } // move assignment
+#endif
+        //Integer(const object& x) { obj = x; RefObj(); }
+        //Integer(object& x) { obj = x; RefObj(); }
+        //Integer(const object x) { obj = x; RefObj(); }
+        Integer(object x) { SET_DEBUG obj = x; SET_DEBUG } // Increase the reference count before calling this function.
+        Integer& operator= (const object& x)
+        {
+            SET_DEBUG
+                DeRef(obj)
+                obj = x;
+            SET_DEBUG
+                Ref(obj) // Possibly not a memory leak.
+                return *this;
+        }
+
+        bool is_initialized() { SET_DEBUG return obj != NOVALUE; }
+        object swap(object x) { object ret = obj; obj = x; SET_DEBUG return ret; }
+
         //Integer(d_ptr a) { obj = MAKE_DBL(a); SET_DEBUG }
         //Integer(s1_ptr a) { obj = MAKE_SEQ(a); SET_DEBUG }
-        Integer(object a) { obj = a; SET_DEBUG }
 
         void NewInteger(elong val) { DeRef(obj); obj = TYPE_CHECK_INTEGER(val) ? val : NOVALUE; SET_DEBUG }
         elong GetInteger() { SET_DEBUG return TYPE_CHECK_INTEGER(obj) ? obj : NOVALUE; }

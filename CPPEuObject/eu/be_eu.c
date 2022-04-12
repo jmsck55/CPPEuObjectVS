@@ -145,7 +145,7 @@ s1_ptr NewS1(elong size)
     return(s1);
 }
 
-object ENewString(const char *s)
+object NewString(const char *s)
 /* create a new string sequence */
 {
     elong len;

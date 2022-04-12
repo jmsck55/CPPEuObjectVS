@@ -44,23 +44,39 @@ namespace eu
     protected:
         //object obj;
     public:
-// #ifndef DONE_DEBUGGING
-//         inline static d_ptr lookatd;
-//         inline static s1_ptr lookats;
-// #endif
+#ifndef DONE_DEBUGGING
+        inline static d_ptr lookatd;
+        inline static s1_ptr lookats;
+#endif
         Sequence() { obj = NOVALUE; SET_DEBUG } // default constructor
         ~Sequence() { SET_DEBUG DeRef(obj) obj = NOVALUE; } // default destructor
-        Sequence(const Sequence& x) { obj = x.obj; Ref(obj) SET_DEBUG } // copy constructor
-        Sequence& operator= (const Sequence& x) { DeRef(obj) obj = x.obj; Ref(obj) SET_DEBUG return *this; } // copy assignment
-    // On newer compilers:
-        Sequence(Sequence&& x) { obj = x.obj; x.obj = NOVALUE; SET_DEBUG } // move constructor
-        Sequence& operator= (Sequence&& x) { DeRef(obj) obj = x.obj; x.obj = NOVALUE; SET_DEBUG return *this; } // move assignment
-    // End On newer compilers.
+        Sequence(const Sequence& x) { obj = x.obj; SET_DEBUG Ref(obj) } // copy constructor
+        Sequence& operator= (const Sequence& x) { SET_DEBUG DeRef(obj) obj = x.obj; SET_DEBUG Ref(obj) return *this; } // copy assignment
+#ifndef __WATCOMC__
+        Sequence(Sequence&& x) { SET_DEBUG obj = x.obj; SET_DEBUG x.obj = NOVALUE; } // move constructor
+        Sequence& operator= (Sequence&& x) { SET_DEBUG DeRef(obj) obj = x.obj; SET_DEBUG x.obj = NOVALUE; return *this; } // move assignment
+#endif
+        //Sequence(const object& x) { obj = x; RefObj(); }
+        //Sequence(object& x) { obj = x; RefObj(); }
+        //Sequence(const object x) { obj = x; RefObj(); }
+        Sequence(object x) { SET_DEBUG obj = x; SET_DEBUG } // Increase the reference count before calling this function.
+        Sequence& operator= (const object& x)
+        {
+            SET_DEBUG
+                DeRef(obj)
+                obj = x;
+            SET_DEBUG
+                Ref(obj) // Possibly not a memory leak.
+                return *this;
+        }
+
+        bool is_initialized() { SET_DEBUG return obj != NOVALUE; }
+        object swap(object x) { object ret = obj; obj = x; SET_DEBUG return ret; }
+
         Sequence(s1_ptr a) { obj = MAKE_SEQ(a); SET_DEBUG }
-        Sequence(object a) { obj = a; SET_DEBUG }
 
         Sequence(const char* str) { obj = ENewString(str); SET_DEBUG }
-        void NewString(const char* str) { DeRef(obj); obj = ENewString(str); SET_DEBUG } // ENewString(), named that way to avoid naming conflicts.
+        void S_NewString(const char* str) { DeRef(obj); obj = NewString(str); SET_DEBUG } // ENewString(), named that way to avoid naming conflicts.
         char* GetCharStr() {
             SET_DEBUG
             if (IS_DBL_OR_SEQUENCE(obj) && IS_SEQUENCE(obj) && is_seq_string(obj, 1, 255)) {

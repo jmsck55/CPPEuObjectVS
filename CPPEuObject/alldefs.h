@@ -54,8 +54,6 @@
 #else
 #define MY_DLL_API MY_EXTERN_C
 #define MY_DLL_SYMBOL
-//#define MY_DLL_API
-//#define MY_DLL_SYMBOL
 #endif // USING_DLL
 #endif // BUILDING_DLL
 
@@ -69,12 +67,13 @@
 
 #if INTPTR_MAX == INT64_MAX
 #define BITS64
-#endif
-
 #if DBL_DIG == LDBL_DIG
 #define EUDOUBLE_WIDTH "15"
 #else
 #define EUDOUBLE_WIDTH "18"
+#endif
+#else
+#define EUDOUBLE_WIDTH "15"
 #endif
 
 #ifdef BITS64
@@ -83,9 +82,12 @@
 #define ELONG_WIDTH "ll"
 #else
 #define ELONG
-#define REGISTER
+#ifdef __WATCOMC__
 // Old compilers can use this:
-//#define REGISTER register
+#define REGISTER register
+#else
+#define REGISTER
+#endif
 #define ELONG_WIDTH "l"
 #endif
 
@@ -107,7 +109,7 @@ typedef struct s1 {                        /* a sequence header block */
     elong length;                   /* number of elements */
     elong ref;                      /* reference count */
     elong postfill;                 /* number of post-fill objects */
-} *s1_ptr; /* total 8*4=32 bytes */
+} *s1_ptr; /* 16 bytes on 32-bit, total 8*4=32 bytes on 64-bit */
 
 #ifdef USE_QUADMATH_H
 typedef __float128 equadmath;
@@ -148,14 +150,14 @@ typedef struct d {                         /* a long double precision number */
         // IS_ATOM_DBL means it is a pointer ("ptr") of "type" with pointer to "cleanup" routine.
         // IS_SEQUENCE means it is an array ("ptr") of length "type" (without postfill variable) with pointer to "cleanup" routine.
 #endif // CLEANUP_MOD
-} /* total 8*3=24 bytes, or 8*4=32 bytes on newer GCC 64-bit */
+} *d_ptr; /* total 8*3=24 bytes, or 8*4=32 bytes on newer GCC 64-bit */
 #else // BITS32:
 typedef struct d {                         /* a long double precision number */
     union {
         eudouble dbl;                    /* long double precision value */
+        double a_dbl; // an actual double on 64-bit platforms, i.e. MSVC compiler.
         struct {
             union {
-                double a_dbl; // an actual double on 64-bit platforms, i.e. MSVC compiler.
                 long double* ldbl;
 #ifdef USE_QUADMATH_H
                 equadmath* qdbl;
@@ -174,9 +176,8 @@ typedef struct d {                         /* a long double precision number */
         // IS_ATOM_DBL means it is a pointer ("ptr") of "type" with pointer to "cleanup" routine.
         // IS_SEQUENCE means it is an array ("ptr") of length "type" (without postfill variable) with pointer to "cleanup" routine.
 #endif // CLEANUP_MOD
-} /* total 8*3=24 bytes, or 8*4=32 bytes on newer GCC 64-bit */
+} *d_ptr; /* total 8*3=24 bytes, or 8*4=32 bytes on 64-bit */
 #endif // BITS64
-* d_ptr;
 #define D_SIZE (sizeof(struct d))
 
 //#ifdef CLEANUP_MOD

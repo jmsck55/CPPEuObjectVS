@@ -40,7 +40,7 @@ MY_DLL_API void SpaceMessage();
 MY_DLL_API char *EMalloc(eulong nbytes);
 MY_DLL_API char *ERealloc(char *orig, eulong newsize);
 MY_DLL_API s1_ptr NewS1(elong size);
-MY_DLL_API object ENewString(const char *s);
+MY_DLL_API object NewString(const char *s);
 MY_DLL_API s1_ptr SequenceCopy(REGISTER s1_ptr a);
 MY_DLL_API object NewDouble(eudouble d);
 MY_DLL_API object Dadd(d_ptr a, d_ptr b);

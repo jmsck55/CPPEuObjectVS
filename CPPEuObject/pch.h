@@ -35,6 +35,7 @@
 #include <stdio.h>
 
 #ifdef USE_QUADMATH_H
+// Not ready to test quadmath.h
 // Use -lquadmath when compiling.
 //#include "libquadmath/quadmath.h"
 #endif // USE_QUADMATH_H

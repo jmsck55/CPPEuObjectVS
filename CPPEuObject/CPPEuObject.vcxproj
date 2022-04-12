@@ -149,7 +149,9 @@
     <ClCompile Include="eu\be_eu.c" />
     <ClCompile Include="modules\be_funcs.c" />
     <ClCompile Include="modules\be_math.c" />
-    <ClCompile Include="modules\be_quad.c" />
+    <ClCompile Include="modules\be_quad.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="pch.c" />
   </ItemGroup>
   <ItemGroup>
@@ -171,10 +173,13 @@
     <ClInclude Include="modules\be_quad.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="modules\eufuncs.hpp" />
     <ClInclude Include="modules\eumath.hpp" />
-    <ClInclude Include="modules\euquad.hpp" />
+    <ClInclude Include="modules\euquad.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -20,7 +20,7 @@ namespace eu
     private:
         //object obj;
     protected:
-        union { // Object does not inherit, it has a union of class datatypes instead.
+        union { // Atom does not inherit, it has a union of class datatypes instead.
             object obj;
             base_class euobject;
             Integer euinteger;
@@ -30,19 +30,32 @@ namespace eu
         inline static d_ptr lookatd;
         inline static s1_ptr lookats;
 #endif
+        Atom() { obj = NOVALUE; SET_DEBUG } // default constructor
+        ~Atom() { SET_DEBUG DeRef(obj) obj = NOVALUE; } // default destructor
+        Atom(const Atom& x) { obj = x.obj; SET_DEBUG Ref(obj) } // copy constructor
+        Atom& operator= (const Atom& x) { SET_DEBUG DeRef(obj) obj = x.obj; SET_DEBUG Ref(obj) return *this; } // copy assignment
+#ifndef __WATCOMC__
+        Atom(Atom&& x) { SET_DEBUG obj = x.obj; SET_DEBUG x.obj = NOVALUE; } // move constructor
+        Atom& operator= (Atom&& x) { SET_DEBUG DeRef(obj) obj = x.obj; SET_DEBUG x.obj = NOVALUE; return *this; } // move assignment
+#endif
+        //Atom(const object& x) { obj = x; RefObj(); }
+        //Atom(object& x) { obj = x; RefObj(); }
+        //Atom(const object x) { obj = x; RefObj(); }
+        Atom(object x) { SET_DEBUG obj = x; SET_DEBUG } // Increase the reference count before calling this function.
+        Atom& operator= (const object& x)
+        {
+            SET_DEBUG
+                DeRef(obj)
+                obj = x;
+            SET_DEBUG
+                Ref(obj) // Possibly not a memory leak.
+                return *this;
+        }
+
         bool is_initialized() { SET_DEBUG return obj != NOVALUE; }
         object swap(object x) { object ret = obj; obj = x; SET_DEBUG return ret; }
 
-        Atom() { obj = NOVALUE; SET_DEBUG } // default constructor
-        ~Atom() { SET_DEBUG DeRef(obj) obj = NOVALUE; } // default destructor
-        Atom(const Atom& x) { obj = x.obj; Ref(obj) SET_DEBUG } // copy constructor
-        Atom& operator= (const Atom& x) { DeRef(obj) obj = x.obj; Ref(obj) SET_DEBUG return *this; } // copy assignment
-    // On newer compilers:
-        Atom(Atom&& x) { obj = x.obj; x.obj = NOVALUE; SET_DEBUG } // move constructor
-        Atom& operator= (Atom&& x) { DeRef(obj) obj = x.obj; x.obj = NOVALUE; SET_DEBUG return *this; } // move assignment
-    // End On newer compilers.
         Atom(d_ptr a) { obj = MAKE_DBL(a); SET_DEBUG }
-        Atom(object a) { obj = a; SET_DEBUG }
         Atom(eudouble d) { obj = IS_DOUBLE_TO_INT(d) ? (object)d : NewDouble(d); SET_DEBUG }
         void NewAtom(eudouble d) { DeRef(obj) obj = IS_DOUBLE_TO_INT(d) ? (object)d : NewDouble(d); SET_DEBUG }
         void NewAtom(integer i) { DeRef(obj) obj = TYPE_CHECK_INTEGER(i) ? i : NewDouble((eudouble)i); SET_DEBUG }
@@ -64,16 +77,14 @@ namespace eu
             const char dbl_format[] = "%." EUDOUBLE_WIDTH "g"
 #endif
         )
-        {
-            object ob = obj;
-            if (!IS_ATOM(ob)) {
+        { // Use TryDoubleToInt() to convert Atom to Integer.
+            if (!IS_ATOM(obj)) {
                 RTFatal("Expected an atom in Atom::print().");
             }
-            if (!IS_ATOM_INT(ob)) {
-                ob = DoubleToInt(ob);
-                if (!IS_ATOM_INT(ob)) {
+            if (!IS_ATOM_INT(obj)) {
+                if (!IS_ATOM_INT(obj)) {
                     // must be a eudouble
-                    printf(dbl_format, DBL_PTR(ob)->dbl);
+                    printf(dbl_format, DBL_PTR(obj)->dbl);
                     return;
                 }
             }
