@@ -21,9 +21,6 @@
     <ClCompile Include="pch.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="modules\be_eu.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="modules\be_funcs.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -31,6 +28,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="modules\be_quad.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="eu\be_eu.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -59,12 +59,6 @@
     <ClInclude Include="eu\Sequence.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="modules\base_class.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="modules\be_eu.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="modules\be_funcs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -84,6 +78,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="eu\alltypes.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eu\base_class.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eu\be_eu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

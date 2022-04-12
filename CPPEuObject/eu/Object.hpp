@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "../modules/base_class.hpp"
+#include "base_class.hpp"
 #include "Integer.hpp"
 #include "Sequence.hpp"
 #include "Atom.hpp"
@@ -43,7 +43,7 @@ namespace eu
     // End On newer compilers.
         Object(d_ptr a) { obj = MAKE_DBL(a); SET_DEBUG }
         Object(s1_ptr a) { obj = MAKE_SEQ(a); SET_DEBUG }
-        Object(object a) { obj = a; SET_DEBUG }
+        Object(object a) { obj = a; Ref(obj) SET_DEBUG }
 
         bool is_initialized() { SET_DEBUG return obj != NOVALUE; }
         object swap(object x) { object ret = obj; obj = x; SET_DEBUG return ret; }

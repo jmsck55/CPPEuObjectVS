@@ -13,7 +13,7 @@
 //#include <math.h>
 
 #define USE_MATH_H
-#include "be_eu.h"
+#include "../eu/be_eu.h"
 
 // be_runtime.c
 

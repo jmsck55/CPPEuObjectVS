@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "../modules/base_class.hpp"
+#include "base_class.hpp"
 
 #define TYPE_CHECK_INTEGER(val) (((val) > NOVALUE) && ((val) < TOO_BIG_INT))
 

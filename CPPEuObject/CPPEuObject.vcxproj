@@ -146,7 +146,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CPPEuObject.cpp" />
-    <ClCompile Include="modules\be_eu.c" />
+    <ClCompile Include="eu\be_eu.c" />
     <ClCompile Include="modules\be_funcs.c" />
     <ClCompile Include="modules\be_math.c" />
     <ClCompile Include="modules\be_quad.c" />
@@ -157,6 +157,8 @@
     <ClInclude Include="eu.hpp" />
     <ClInclude Include="eu\alltypes.hpp" />
     <ClInclude Include="eu\Atom.hpp" />
+    <ClInclude Include="eu\base_class.hpp" />
+    <ClInclude Include="eu\be_eu.h" />
     <ClInclude Include="eu\Integer.hpp" />
     <ClInclude Include="eu\Object.hpp" />
     <ClInclude Include="eu\Sequence.hpp" />
@@ -164,8 +166,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="modules\base_class.hpp" />
-    <ClInclude Include="modules\be_eu.h" />
     <ClInclude Include="modules\be_funcs.h" />
     <ClInclude Include="modules\be_math.h" />
     <ClInclude Include="modules\be_quad.h">

@@ -9,7 +9,7 @@
 //#include <time.h>
 
 #define USE_STANDARD_LIBRARY
-#include "be_eu.h"
+#include "../eu/be_eu.h"
 
 // Uses files from Euphoria v4.0.5
 

@@ -10,7 +10,7 @@
 // To use eu::seq(), define USE_STDARG_H
 #define USE_STDARG_H
 
-#include "../modules/base_class.hpp"
+#include "base_class.hpp"
 
 namespace eu
 {

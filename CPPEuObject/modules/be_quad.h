@@ -12,7 +12,7 @@
 
 // To use this file, define USE_QUADMATH_H for the compiler.
 #define USE_QUADMATH_H
-#include "be_eu.h"
+#include "../eu/be_eu.h"
 
 // all use: #include <quadmath.h>
 MY_DLL_API object NewFloat128(equadmath q);

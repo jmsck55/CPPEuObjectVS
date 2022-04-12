@@ -7,7 +7,7 @@
 
 #pragma once
 
-//#include "../modules/base_class.hpp"
+//#include "base_class.hpp"
 #include "Integer.hpp"
 
 #define IS_DOUBLE_TO_INT(temp_dbl) ((((eu::eudouble)((eu::elong)temp_dbl)) == temp_dbl) && (temp_dbl <= MAXINT_DBL) && (temp_dbl >= MININT_DBL))
@@ -15,17 +15,24 @@
 namespace eu
 {
     template <class AtomType = eudouble>
-    class Atom : public Integer // Atom inherits Integer data and functions.
+    class Atom
     {
     private:
         //object obj;
     protected:
-        //object obj;
+        union { // Object does not inherit, it has a union of class datatypes instead.
+            object obj;
+            base_class euobject;
+            Integer euinteger;
+        };
     public:
-        // #ifndef DONE_DEBUGGING
-        //         inline static d_ptr lookatd;
-        //         inline static s1_ptr lookats;
-        // #endif
+#ifndef DONE_DEBUGGING
+        inline static d_ptr lookatd;
+        inline static s1_ptr lookats;
+#endif
+        bool is_initialized() { SET_DEBUG return obj != NOVALUE; }
+        object swap(object x) { object ret = obj; obj = x; SET_DEBUG return ret; }
+
         Atom() { obj = NOVALUE; SET_DEBUG } // default constructor
         ~Atom() { SET_DEBUG DeRef(obj) obj = NOVALUE; } // default destructor
         Atom(const Atom& x) { obj = x.obj; Ref(obj) SET_DEBUG } // copy constructor
@@ -45,6 +52,10 @@ namespace eu
         elong GetAtomInt() { SET_DEBUG if (IS_ATOM_INT(obj)) { return obj; } else if (IS_ATOM_DBL(obj)) { return (elong)(DBL_PTR(obj)->dbl); } RTFatal("Expected an Atom, but found a Sequence, in 'GetAtomInt()'"); return 0; }
         eulong GetAtomUnsignedInt() { SET_DEBUG if (IS_ATOM_INT(obj)) { return (eulong)obj; } else if (IS_ATOM_DBL(obj)) { return (eulong)(DBL_PTR(obj)->dbl); } RTFatal("Expected an Atom, but found a Sequence, in 'GetAtomUnsignedInt()'"); return 0; }
         elong TryDoubleToInt() { if (IS_DBL_OR_SEQUENCE(obj) && IS_ATOM_DBL(obj)) { object ob = DoubleToInt(obj); if (ob != obj) { DeRefDS(obj) obj = ob; return E_INTEGER; } return E_ATOM; } return IS_ATOM_INT(obj); }
+
+        // Access union member classes:
+        base_class* eobject() { return &euobject; }
+        Integer* einteger() { return &euinteger; }
 
         void print(int ascii = 0, const char int_format[] = "%" ELONG_WIDTH "d", int char_min = 32, int char_max = 127,
 #ifdef BITS64
@@ -66,10 +77,7 @@ namespace eu
                     return;
                 }
             }
-            {
-                Integer i(ob);
-                i.print(ascii, int_format, char_min, char_max);
-            }
+            euinteger.print(ascii, int_format, char_min, char_max);
         }
     };
 

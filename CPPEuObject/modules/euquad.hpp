@@ -25,7 +25,7 @@ namespace eu
     private:
         elong const type() { return E_FLOAT128; }
     public:
-        Quadmath(object ob) { obj = ob; }
+        Quadmath(object ob) { obj = ob; Ref(obj) }
         Quadmath() { obj = NOVALUE; } // default constructor
         ~Quadmath() { DeRef(obj) obj = NOVALUE; } // default destructor
         Quadmath(const Quadmath& x) { obj = x.obj; Ref(obj) } // copy constructor
